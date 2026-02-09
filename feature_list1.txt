@@ -1,0 +1,51 @@
+Asset Management Software – Feature List
+
+1. Understanding the Client’s Requirement
+From the discussion with the client, the main requirement is to build a simple system to manage company assets. The client wants an easy way to keep track of:
+What assets the company owns
+Which employee is currently using a particular asset
+The goal of this system is to reduce confusion around asset ownership and make it quick and easy to identify who is responsible for any given item at a particular time.
+
+2. Creative Decisions Taken
+While designing this system, a few basic decisions were made to keep things simple and practical:
+The application is planned as a basic web-based system
+The project is given a straightforward name: Asset Management System
+Only essential features are included in the first version
+The focus is more on clarity and usability rather than advanced or complex functionality
+
+3. Assumptions Made
+To keep the system simple and manageable, the following assumptions are made:
+Every asset will have a unique ID or name
+Every employee will have a unique employee ID
+An asset can be assigned to only one employee at a time
+An employee can have multiple assets assigned to them
+Only administrators will have permission to add or remove assets
+Employee login functionality is not required in the initial version
+
+4. Feature List
+1. Add Asset
+Allows the admin to add a new asset by entering basic details such as:
+Asset name
+Asset ID
+2. Add Employee
+Allows the admin to add employee details including:
+Employee name
+Employee ID
+3. Assign Asset
+This feature allows an asset to be assigned to a specific employee.
+4. View Asset List
+Displays a list of all assets along with their current status (assigned or unassigned).
+5. View Assigned Assets
+Shows which assets are currently assigned to which employees.
+6. Update Asset Assignment
+Allows updating asset ownership when:
+An asset is returned
+An asset is reassigned to another employee
+5. Questions for the Next Client Meeting
+To better understand future requirements and possible improvements, the following questions can be discussed with the client:
+What types of assets need to be tracked (e.g., laptops, phones, accessories)?
+Do employees need access to the system in the future?
+Should returned assets be tracked separately or marked with a specific status?
+Is it acceptable to store only minimal employee information?
+Will this system be used only internally?
+Do you want reporting or export features (like Excel or PDF) later on?
