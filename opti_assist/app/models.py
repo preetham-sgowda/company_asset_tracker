@@ -1,0 +1,96 @@
+from sqlalchemy import Column, Integer, String, Text, Boolean, Date, DateTime, Numeric, ForeignKey
+from sqlalchemy.orm import relationship
+from datetime import datetime
+from .database import Base
+
+class Department(Base):
+    __tablename__ = "departments"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    cost_center_code = Column(String(50))
+    manager_employee_id = Column(Integer, nullable=True) # Soft link
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class Location(Base):
+    __tablename__ = "locations"
+    id = Column(Integer, primary_key=True, index=True)
+    site_name = Column(String(100), nullable=False)
+    address = Column(Text)
+    city = Column(String(50))
+    country = Column(String(50))
+    is_active = Column(Boolean, default=True)
+
+class Vendor(Base):
+    __tablename__ = "vendors"
+    id = Column(Integer, primary_key=True, index=True)
+    vendor_name = Column(String(150), nullable=False)
+    contact_person = Column(String(100))
+    contact_email = Column(String(150))
+    support_phone = Column(String(50))
+    website = Column(String(200))
+    contract_expiry_date = Column(Date)
+
+class AssetCategory(Base):
+    __tablename__ = "asset_categories"
+    id = Column(Integer, primary_key=True, index=True)
+    category_name = Column(String(100), nullable=False)
+    parent_category_id = Column(Integer, nullable=True) # Soft link
+    depreciation_years = Column(Integer, default=3)
+
+class Employee(Base):
+    __tablename__ = "employees"
+    id = Column(Integer, primary_key=True, index=True)
+    employee_code = Column(String(50), unique=True, nullable=False)
+    first_name = Column(String(100), nullable=False)
+    last_name = Column(String(100), nullable=False)
+    email = Column(String(150), unique=True, nullable=False)
+    phone_number = Column(String(50))
+    job_title = Column(String(100))
+    department_id = Column(Integer, nullable=True) # Soft link
+    location_id = Column(Integer, nullable=True) # Soft link
+    employment_status = Column(String(50), default='Active')
+    hire_date = Column(Date)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class Asset(Base):
+    __tablename__ = "assets"
+    id = Column(Integer, primary_key=True, index=True)
+    asset_tag = Column(String(50), unique=True, nullable=False)
+    serial_number = Column(String(100))
+    asset_name = Column(String(150), nullable=False)
+    model_number = Column(String(100))
+    category_id = Column(Integer, nullable=True) # Soft link
+    status = Column(String(50), default='In Stock')
+    condition_grade = Column(String(20))
+    vendor_id = Column(Integer, nullable=True) # Soft link
+    purchase_date = Column(Date)
+    purchase_cost = Column(Numeric(10, 2))
+    warranty_expiry_date = Column(Date)
+    order_number = Column(String(100))
+    current_employee_id = Column(Integer, nullable=True) # Soft link
+    current_location_id = Column(Integer, nullable=True) # Soft link
+    notes = Column(Text)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    last_updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class AssetAssignmentHistory(Base):
+    __tablename__ = "asset_assignment_history"
+    id = Column(Integer, primary_key=True, index=True)
+    asset_id = Column(Integer, nullable=False) # Soft link
+    employee_id = Column(Integer, nullable=True) # Soft link
+    assigned_date = Column(DateTime, default=datetime.utcnow)
+    returned_date = Column(DateTime, nullable=True)
+    assigned_by_admin_id = Column(Integer, nullable=True)
+    notes = Column(Text)
+
+class MaintenanceLog(Base):
+    __tablename__ = "maintenance_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    asset_id = Column(Integer, nullable=False) # Soft link
+    maintenance_type = Column(String(100))
+    description = Column(Text)
+    cost = Column(Numeric(10, 2))
+    vendor_id = Column(Integer, nullable=True) # Soft link
+    start_date = Column(Date)
+    completion_date = Column(Date)
+    status = Column(String(50))

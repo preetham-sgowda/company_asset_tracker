@@ -3,7 +3,8 @@
 -- Scale: 1000+ Employees, HR Integration, Audit Trails
 -- Constraint: No Foreign Key Constraints (Soft Linking only)
 
-CREATE DATABASE asset_db;
+-- Database creation is handled by Docker POSTGRES_DB environment variable
+-- CREATE DATABASE asset_db;
 
 -- ---------------------------------------------------------
 -- 1. REFERENCE TABLES (Categories, Locations, Vendors, Departments)
