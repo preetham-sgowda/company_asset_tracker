@@ -8,17 +8,25 @@ from .. import models, schemas, database
 router = APIRouter(prefix="/api", tags=["Assignments"])
 
 
-# Feature: Assign an in-stock asset to an employee
-# POST /api/assignments
-# DB: INSERT into asset_assignment_history; UPDATE assets SET current_employee_id, status = 'Assigned'
-@router.post("/assignments", response_model=schemas.AssetAssignmentHistory)
+@router.post("/assignments", response_model=schemas.AssetAssignmentHistory, status_code=201)
 def assign_asset(request: schemas.AssignAssetRequest, db: Session = Depends(database.get_db)):
+    """
+    Assign an 'In Stock' asset to an active employee.
+    
+    - **asset_id**: The ID of the asset to be assigned.
+    - **employee_id**: The ID of the employee receiving the asset.
+    - **assigned_by_admin_id**: Optional ID of the administrator performing the assignment.
+    
+    This endpoint creates a new assignment history record and updates the asset's status and current holder.
+    """
     # Validate asset exists
     asset = db.query(models.Asset).filter(models.Asset.id == request.asset_id).first()
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found.")
+    
     if asset.status == "Assigned":
         raise HTTPException(status_code=400, detail=f"Asset '{asset.asset_name}' is already assigned. Return it first.")
+    
     if asset.status == "Retired":
         raise HTTPException(status_code=400, detail=f"Asset '{asset.asset_name}' is retired and cannot be assigned.")
 
@@ -26,6 +34,7 @@ def assign_asset(request: schemas.AssignAssetRequest, db: Session = Depends(data
     employee = db.query(models.Employee).filter(models.Employee.id == request.employee_id).first()
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found.")
+    
     if employee.employment_status != "Active":
         raise HTTPException(status_code=400, detail=f"Employee '{employee.first_name} {employee.last_name}' is not active.")
 
@@ -49,15 +58,20 @@ def assign_asset(request: schemas.AssignAssetRequest, db: Session = Depends(data
     return assignment
 
 
-# Feature: Record the return of an asset to inventory
-# POST /api/returns
-# DB: UPDATE asset_assignment_history SET returned_date; UPDATE assets SET current_employee_id = NULL, status = 'In Stock'
 @router.post("/returns")
 def return_asset(request: schemas.ReturnAssetRequest, db: Session = Depends(database.get_db)):
+    """
+    Record the return of an assigned asset back to inventory.
+    
+    - **asset_id**: The ID of the asset being returned.
+    
+    This marks the current assignment as completed (sets returned_date) and resets the asset's status to 'In Stock'.
+    """
     # Validate asset exists
     asset = db.query(models.Asset).filter(models.Asset.id == request.asset_id).first()
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found.")
+    
     if asset.status != "Assigned":
         raise HTTPException(status_code=400, detail=f"Asset '{asset.asset_name}' is not currently assigned.")
 
@@ -70,6 +84,7 @@ def return_asset(request: schemas.ReturnAssetRequest, db: Session = Depends(data
         )
         .first()
     )
+    
     if assignment:
         assignment.returned_date = datetime.utcnow()
         if request.notes:

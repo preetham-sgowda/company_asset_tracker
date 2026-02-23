@@ -1,0 +1,66 @@
+List of API Designs:
+
+1.
+Feature: Add a new physical asset
+API Endpoint: POST /api/assets/
+Database Action: INSERT a new row into the assets table with specifications and status.
+
+2.
+Feature: Search for an asset by its unique tag
+API Endpoint: GET /api/assets/tag/{asset_tag}
+Database Action: SELECT from the assets table where asset_tag matches the query.
+
+3.
+Feature: View detailed specifications of a specific asset
+API Endpoint: GET /api/assets/{id}
+Database Action: SELECT all columns from the assets table for a specific primary key ID.
+
+4.
+Feature: Update asset metadata (condition, notes, etc.)
+API Endpoint: PATCH /api/assets/{id}
+Database Action: UPDATE specific fields in the assets table for a given ID.
+
+5.
+Feature: Decommission/retire an asset
+API Endpoint: DELETE /api/assets/{id}
+Database Action: UPDATE the assets table to set the status to 'Retired'.
+
+6.
+Feature: Register a new employee
+API Endpoint: POST /api/employees/
+Database Action: INSERT a new row into the employees table with code, name, and department.
+
+7.
+Feature: View employee profile with currently held assets
+API Endpoint: GET /api/employees/{id}
+Database Action: SELECT from employees joined with assets filtered by current_employee_id.
+
+8.
+Feature: Deactivate an employee (Termination/Resignation)
+API Endpoint: PATCH /api/employees/{id}/deactivate
+Database Action: UPDATE the employees table to set employment_status to 'Inactive'.
+
+9.
+Feature: Assign an in-stock asset to an employee
+API Endpoint: POST /api/assignments
+Database Action: INSERT into asset_assignment_history and UPDATE assets to set the holder and status.
+
+10.
+Feature: Record the return of an asset to inventory
+API Endpoint: POST /api/returns
+Database Action: UPDATE asset_assignment_history with a return date and RESET the holder in the assets table.
+
+11.
+Feature: Log a maintenance event for an asset
+API Endpoint: POST /api/maintenance-logs/
+Database Action: INSERT a new row into the maintenance_logs table linked to an asset.
+
+12.
+Feature: Group assets by category
+API Endpoint: GET /api/asset-categories/{id}/assets
+Database Action: SELECT from the assets table filtered by category_id.
+
+13.
+Feature: System health check
+API Endpoint: GET /health
+Database Action: Verify active connection to the PostgreSQL database.

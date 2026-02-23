@@ -1,0 +1,62 @@
+# Asset Management System - API Design Sheet
+
+This document defines the API endpoints, methods, and database actions for the Company Asset Tracker.
+
+## 1. Core Asset Management (Assets)
+- **POST /api/assets/**: Create a new physical asset.
+  - *DB Action*: INSERT into `assets` table.
+- **GET /api/assets/tag/{asset_tag}**: Search for an asset by its unique tag.
+  - *DB Action*: SELECT from `assets` WHERE `asset_tag` = ?.
+- **GET /api/assets/{id}**: View detailed specifications of a specific asset.
+  - *DB Action*: SELECT * from `assets` WHERE `id` = ?.
+- **GET /api/assets/**: List all assets (with optional status filter).
+  - *DB Action*: SELECT * from `assets` [FILTER by status].
+- **PATCH /api/assets/{id}**: Update asset metadata (condition, notes, etc.).
+  - *DB Action*: UPDATE `assets` table.
+- **DELETE /api/assets/{id}**: Decommission/retire an asset (marks status as 'Retired').
+  - *DB Action*: UPDATE `assets` status = 'Retired'.
+- **GET /api/assets/{id}/history**: View the full assignment history of a specific asset.
+  - *DB Action*: SELECT * from `asset_assignment_history` WHERE `asset_id` = ?.
+- **GET /api/assets/{id}/maintenance**: View all maintenance logs for a specific asset.
+  - *DB Action*: SELECT * from `maintenance_logs` WHERE `asset_id` = ?.
+
+## 2. Employee Management (Employees)
+- **POST /api/employees/**: Register a new employee.
+  - *DB Action*: INSERT into `employees` table.
+- **GET /api/employees/**: View list of all employees (with optional status filter).
+  - *DB Action*: SELECT * from `employees` [FILTER by status].
+- **GET /api/employees/{id}**: View an employee's profile with their currently held assets.
+  - *DB Action*: SELECT from `employees` + SELECT from `assets` WHERE `current_employee_id` = ?.
+- **PATCH /api/employees/{id}**: Update employee details.
+  - *DB Action*: UPDATE `employees` table.
+- **PATCH /api/employees/{id}/deactivate**: Deactivate an employee (Termination/Resignation).
+  - *DB Action*: UPDATE `employees` status = 'Inactive'.
+
+## 3. Assignment Logic (Assignments)
+- **POST /api/assignments**: Assign an in-stock asset to an employee.
+  - *DB Action*: INSERT into `asset_assignment_history`; UPDATE `assets` (set employee, status='Assigned').
+- **POST /api/returns**: Record the return of an asset to inventory.
+  - *DB Action*: UPDATE `asset_assignment_history` (set returned_date); UPDATE `assets` (set employee=NULL, status='In Stock').
+
+## 4. Organizational Structure (Departments, Locations, Vendors, Categories)
+- **Departments**: CRUD (POST, GET, GET {id}, PATCH, DELETE) on `/api/departments/`.
+- **Locations**: CRUD (POST, GET, GET {id}, PATCH, DELETE) on `/api/locations/`.
+- **Vendors**: CRUD (POST, GET, GET {id}, PATCH, DELETE) on `/api/vendors/`.
+- **Asset Categories**: CRUD (POST, GET, GET {id}, PATCH, DELETE) on `/api/asset-categories/`.
+  - **GET /api/asset-categories/{id}/assets**: View all assets belonging to a specific category.
+
+## 5. Maintenance & Lifecycle (Maintenance)
+- **POST /api/maintenance-logs/**: Log a maintenance event for an asset.
+  - *DB Action*: INSERT into `maintenance_logs`.
+- **GET /api/maintenance-logs/**: View all maintenance logs.
+  - *DB Action*: SELECT * from `maintenance_logs`.
+- **GET /api/maintenance-logs/{id}**: View a single maintenance log by ID.
+  - *DB Action*: SELECT * from `maintenance_logs` WHERE `id` = ?.
+- **PATCH /api/maintenance-logs/{id}**: Update a maintenance log.
+  - *DB Action*: UPDATE `maintenance_logs`.
+- **DELETE /api/maintenance-logs/{id}**: Delete a maintenance log.
+  - *DB Action*: DELETE from `maintenance_logs`.
+
+## 6. System Endpoints
+- **GET /health**: Health check (system status & DB connectivity).
+- **GET /**: Root welcome endpoint.
